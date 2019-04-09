@@ -28,58 +28,47 @@ def generateSubDataSet(data):
     subdataset = data.drop(features_to_delete, 1)
     return subdataset
     
-def getInconsistency(subdataset, data):
-#    print(subdataset)
-#    subset_copy = pd.DataFrame(data = subdataset)
-    
-    
+def getInconsistency(subdataset, data):    
     features = subdataset.drop('Id', 1).columns
-#    for column in subdataset:
-#        if column != 'Id':
-#            features = np.append(column, features)
-#    for column in subdataset:
-#        if column != 'Id':
-#            features = np.append(features, column)
-    print('features: ', features)
+
+#    print('features: ', features)
     subdataset['is_duplicated'] = subdataset.duplicated(features)
-    n = subdataset['is_duplicated'].sum()
-    print('n: ', n)
+    n  = subdataset['is_duplicated'].sum()    
+#    print('n: ', n)
     classes_n = []
     for index, row in subdataset.iterrows():
         if row['is_duplicated'] == True:
-            idx = row['Id']
-            print('idx: ', idx)
+            idx = row['Id']            
             current_class = data.loc[ idx - 1 , "SalePrice"]
             classes_n = np.append(current_class, classes_n)
     
-#    print('classes_n: ', classes_n)
-#    unique_elements, counts_elements = np.unique(classes_n, return_counts=True)
-#    print(np.asarray((counts_elements.max())))
-#    print(Counter(classes_n).most_common()[0][0])
-#    print('mode classes_n: ', mode(classes_n))
-             
-#    with open("Output.txt", "w") as text_file:
-#        print(subdataset, file=text_file)
+    unique_elements, counts_elements = np.unique(classes_n, return_counts=True)
+
+    incosistency = 0
+    for i in range (n):
+        incosistency = incosistency + (n - counts_elements[i])
     
-#    print(subdataset)
-#    for index, row in subdataset.iterrows():
-#        if row['is_duplicated'] == True:
-#            print(row)
+    if incosistency != 0:
+        incosistency /= (n * 2)
+    
+    return incosistency
 
 def LVF(data, max_tries, allow_inconsistency):
     n_features      = data.shape[0]
     best_n_features = n_features
     best_subdataset = []
-    for i in range(max_tries):        
-        current_subdataset = generateSubDataSet(data)        
+    for i in range(max_tries):                    
+        current_subdataset       = generateSubDataSet(data.drop(['SalePrice', 'Id'], axis = 1))        
+        current_subdataset['Id'] = data['Id']        
         current_n_features = current_subdataset.shape[0]        
         if current_n_features < best_n_features:
-            if getInconsistency() < allow_inconsistency:
+            if getInconsistency(current_subdataset, data) < allow_inconsistency:
                 best_subdataset = current_subdataset
                 best_n_features = current_n_features            
-        elif current_n_features == best_n_features and getInconsistency() < allow_inconsistency:
+        elif current_n_features == best_n_features and getInconsistency(current_subdataset, data) < allow_inconsistency:
             best_subdataset = current_subdataset
-    return best_subdataset
+    best_subdataset = best_subdataset.drop('is_duplicated',1)
+    return best_subdataset, best_n_features
         
 
 def determinateDataWithOutCorrelation(data, index, column_class):
@@ -99,14 +88,7 @@ def determinateDataWithOutCorrelation(data, index, column_class):
      
 # Cargamos dataset
 df = pd.read_csv('train.csv')
-
-subdataset = generateSubDataSet(df.drop('SalePrice', axis = 1))
-subdataset['Id'] = df['Id']
-#print('subdataset')
-#print(subdataset)
-
-getInconsistency(subdataset, df)
-
+print(LVF(df, 50, 3))
 
 # Empezamos a dibujar
 #plt.figure(figsize=(30,25))
