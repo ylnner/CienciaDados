@@ -85,41 +85,45 @@ def determinateDataWithOutCorrelation(data, index, column_class):
              new_data = new_data.drop(column, 1)
      
      return new_data
-     
+ 
+def CSF(df):
+     # Empezamos a dibujar
+    plt.figure(figsize=(30,25))
+    
+    # Obtenemos la correlacion entre los atributos
+    cor = df.corr()
+    print('########## CORRELATION BETWEEN FEATURES ##########')
+    print(cor)
+    
+    # Ploteamos correlation
+    sns.heatmap(cor, annot=True, cmap=plt.cm.Blues)
+    plt.savefig('Correlations.png')
+    
+    # Correlation de todos los atributos contra el atributo 'SalePrice'
+    cor_target = abs(cor["SalePrice"])
+    
+    # Selccionamos los atributos con al menos 0,5 de correlacion
+    relevant_features = cor_target[cor_target>0.5]
+    
+    print('########## FEATURES WITH LONG CORRELATION WITH SALEPRICE ##########')
+    print(relevant_features)
+    
+    for column in df:
+        if column not in relevant_features:
+            df = df.drop(column, 1)
+            
+    print('########## DATASET ( FEATURES WITH LONG CORRELATION WITH SALEPRICE )  ##########')
+    print(df)
+    
+    
+    print('########## DATASET ( FEATURES WITH LONG CORRELATION WITH SALEPRICE AND WITHOUT CORRELATION BETWEEN THEM)  ##########')
+    # Eliminamos los atributos con un alto indice de correlacion
+    new_df = determinateDataWithOutCorrelation(df, 0.7, "SalePrice")
+    print(new_df)            
+            
 # Cargamos dataset
 df = pd.read_csv('train.csv')
 print(LVF(df, 50, 3))
+CSF(df)
 
-# Empezamos a dibujar
-#plt.figure(figsize=(30,25))
-#
-## Obtenemos la correlacion entre los atributos
-#cor = df.corr()
-#print('########## CORRELATION BETWEEN FEATURES ##########')
-#print(cor)
-#
-## Ploteamos correlation
-#sns.heatmap(cor, annot=True, cmap=plt.cm.Blues)
-#plt.savefig('Correlations.png')
-#
-## Correlation de todos los atributos contra el atributo 'SalePrice'
-#cor_target = abs(cor["SalePrice"])
-#
-## Selccionamos los atributos con al menos 0,5 de correlacion
-#relevant_features = cor_target[cor_target>0.5]
-#
-#print('########## FEATURES WITH LONG CORRELATION WITH SALEPRICE ##########')
-#print(relevant_features)
-#
-#for column in df:
-#    if column not in relevant_features:
-#        df = df.drop(column, 1)
-#
-#print('########## DATASET ( FEATURES WITH LONG CORRELATION WITH SALEPRICE )  ##########')
-#print(df)
-#
-#
-#print('########## DATASET ( FEATURES WITH LONG CORRELATION WITH SALEPRICE AND WITHOUT CORRELATION BETWEEN THEM)  ##########')
-## Eliminamos los atributos con un alto indice de correlacion
-#new_df = determinateDataWithOutCorrelation(df, 0.7, "SalePrice")
-#print(new_df)
+
