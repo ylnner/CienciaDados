@@ -1,6 +1,8 @@
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import math
+from sklearn.metrics import confusion_matrix
+
 
 # Obtiene distancia entre dos puntos x1 y x2
 def my_mse( x1, x2):
@@ -80,9 +82,9 @@ def variarValorK():
     print('Resultado: ', res)
     print('Distância: ', dist[:K])
 
-def randomSubSampling(test_size):   
+def randomSubSampling(test_size):    
     iris = pd.read_csv('bezdekIris.data')
-    iris_data = iris.values
+    iris_data = iris.values    
 
     n_times_random_subsampling = 10
     for i in range(n_times_random_subsampling):
@@ -103,17 +105,15 @@ def randomSubSampling(test_size):
         K = 5
         X_test = iris_test_data[:,0:4]
         Y_test =iris_test_data[:,4]
-
+        Y_pred = []
         print('############################# ', i+1 , '-vez #############################')
         for j in range(iris_test_data.shape[0]):
-            x = X_test[j,:]
-    #         print(x)
+            x = X_test[j,:]    
             res, dist = knn(K, x, X_train, Y_train)                
-            print('k-nn: ', res)
-            print('Predict Value: ', most_frequent(res))
-            print('True Value: ', Y_test[j])        
-            print('**************************************')
-
+            Y_pred.append(most_frequent(res))
+                    
+        print('CONFUSION MATRIX')
+        print(confusion_matrix(Y_test, Y_pred))        
         
 def kFoldCrossValidation(k_value):
      iris = pd.read_csv('bezdekIris.data')
@@ -141,16 +141,16 @@ def kFoldCrossValidation(k_value):
          K = 5
          X_test = iris_test_data[:,0:4]
          Y_test =iris_test_data[:,4]
-        
+         Y_pred = []
          print('############################# ', i+1 , '-vez #############################')
          for j in range(iris_test_data.shape[0]):
-            x = X_test[j,:]
-    #         print(x)
+            x = X_test[j,:]    
             res, dist = knn(K, x, X_train, Y_train)                
-            print('k-nn: ', res)
-            print('Predict Value: ', most_frequent(res))
-            print('True Value: ', Y_test[j])        
-            print('**************************************')
+            Y_pred.append(most_frequent(res))
+            
+         print('CONFUSION MATRIX')
+         print(confusion_matrix(Y_test, Y_pred))
+        
 
 def leaveOneOut():
     iris = pd.read_csv('bezdekIris.data')
