@@ -60,27 +60,45 @@ def variarValorK():
     # Variando K
     print('############# K = 3 #############')
     # Escolhemos um elemento para fazer predição
-    x = X[19,:]
-    K = 3
-    res, dist = knn(K, x, X, Y)
-    print('Resultado: ', res)
-    print('Distância: ', dist[:K])
-
+    x      = X[19,:]
+    X      = np.delete(X, 19, 0)        
+    Y_true = [Y[19]]
+    Y      = np.delete(Y, 19)
+    Y_pred = []
+    K      = 3        
+    res, dist = knn(K, x, X, Y)    
+    Y_pred.append([most_frequent(res)])    
+    print('CONFUSION MATRIX')
+    print(confusion_matrix(Y_true, Y_pred)) 
+    print('Resultado: ', Y_pred)    
+        
     print('############# K = 5 #############')
     # Escolhemos um elemento para fazer predição
-    x = X[49,:]
-    K = 5
+    x      = X[49,:]
+    X      = np.delete(X, 19, 0)
+    Y_true = [Y[49]]
+    Y      = np.delete(Y, 49)
+    Y_pred = []
+    K      = 5
     res, dist = knn(K, x, X, Y)
-    print('Resultado: ', res)
-    print('Distância: ', dist[:K])
+    Y_pred.append(most_frequent(res))
+    print('CONFUSION MATRIX')
+    print(confusion_matrix(Y_true, Y_pred)) 
+    print('Resultado: ', Y_pred) 
 
     print('############# K = 7 #############')
     # Escolhemos um elemento para fazer predição
-    x = X[140,:]
-    K = 7
+    x      = X[140,:]
+    X      = np.delete(X, 140, 0)
+    Y_true = [Y[140]]
+    Y      = np.delete(Y, 140)
+    Y_pred = []    
+    K      = 7
     res, dist = knn(K, x, X, Y)
-    print('Resultado: ', res)
-    print('Distância: ', dist[:K])
+    Y_pred.append(most_frequent(res))
+    print('CONFUSION MATRIX')
+    print(confusion_matrix(Y_true, Y_pred)) 
+    print('Resultado: ', Y_pred) 
 
 def randomSubSampling(test_size):    
     iris = pd.read_csv('bezdekIris.data')
